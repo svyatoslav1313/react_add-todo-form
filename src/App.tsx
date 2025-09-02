@@ -6,6 +6,11 @@ import { TodoList } from './components/TodoList';
 import { useState } from 'react';
 import { Todos } from './types/todos';
 
+const initialTodos: Todos[] = todosFromServer.map(todo => ({
+  ...todo,
+  user: usersFromServer.find(us => us.id === todo.id),
+}));
+
 function getNewTodoId(todos: Todos[]) {
   const maxId = Math.max(...todos.map(todo => todo.id));
 
@@ -15,7 +20,7 @@ function getNewTodoId(todos: Todos[]) {
 export const App = () => {
   const [title, setTitle] = useState('');
   const [userId, setUserId] = useState(0);
-  const [todos, setTodos] = useState<Todos[]>(todosFromServer);
+  const [todos, setTodos] = useState<Todos[]>(initialTodos);
 
   const [titleError, setTitleError] = useState(false);
   const [userError, setUserError] = useState(false);
@@ -61,6 +66,16 @@ export const App = () => {
     setUserError(false);
   };
 
+  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(event.target.value);
+    setTitleError(false);
+  };
+
+  const handleUserChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setUserId(+event.target.value);
+    setUserError(false);
+  };
+
   return (
     <div className="App">
       <h1>Add todo form</h1>
@@ -74,7 +89,7 @@ export const App = () => {
             data-cy="titleInput"
             placeholder="Enter a title"
             value={title}
-            onChange={event => setTitle(event.target.value)}
+            onChange={handleTitleChange}
           />
           {titleError && <span className="error">Please enter a title</span>}
         </div>
@@ -85,7 +100,7 @@ export const App = () => {
             id="user"
             data-cy="userSelect"
             value={userId}
-            onChange={event => setUserId(+event.target.value)}
+            onChange={handleUserChange}
           >
             <option value="0">Choose a user</option>
             {usersFromServer.map(user => (
@@ -95,7 +110,7 @@ export const App = () => {
             ))}
           </select>
 
-          {userError && <span className="error">Please enter a title</span>}
+          {userError && <span className="error">Please choose a user</span>}
         </div>
 
         <button type="submit" data-cy="submitButton">
