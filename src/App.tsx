@@ -8,7 +8,7 @@ import { Todos } from './types/todos';
 
 const initialTodos: Todos[] = todosFromServer.map(todo => ({
   ...todo,
-  user: usersFromServer.find(us => us.id === todo.id),
+  user: usersFromServer.find(us => us.id === todo.userId),
 }));
 
 function getNewTodoId(todos: Todos[]) {
